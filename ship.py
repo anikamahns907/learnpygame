@@ -37,7 +37,7 @@ num_lives = 3
 
 
 
-
+enemies_down = 0
    
 
 
@@ -52,7 +52,7 @@ num_of_enemies = 15
 for i in range(num_of_enemies):
     enemyImg.append(pygame.image.load('ufo.png'))
     enemyX.append(random.randint(0, 735))
-    enemyY.append(random.randint(-1000, 400))
+    enemyY.append(random.randint(-600, 300))
     enemyX_change.append(2)
     enemyY_change.append(60)
 
@@ -76,6 +76,7 @@ font = pygame.font.Font('freesansbold.ttf', 32)
 over_font = pygame.font.Font('freesansbold.ttf', 62)
 
 
+
 textX = 10
 textY = 10
 def show_score(x, y):
@@ -83,10 +84,9 @@ def show_score(x, y):
     screen.blit(score, (x,y))
 
 def game_over_text():
-    game_over = over_font.render("GAME OVER" , True, (255, 255, 255))
+    game_over = over_font.render("GAME OVER press e to exit and SPACE to play again" , True, (255, 255, 255))
     screen.blit(game_over, (275,250))
 # live
-
 
 
 
@@ -119,109 +119,126 @@ def captured(enemyX, enemyY, playerX, playerY):
         return False
 
 
- 
+on = True
+while on:
+        # game loop
+    running = True
+    while running:
+        screen.fill((0, 0, 0))
+        # background image
+        screen.blit(background, (0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                on = False
 
-    # game loop
-running = True
-while running:
-    screen.fill((0, 0, 0))
-    # background image
-    screen.blit(background, (0, 0))
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                playerX_change = -5
-            if event.key == pygame.K_RIGHT:
-                playerX_change = 5
-            if event.key == pygame.K_SPACE:
-                if bullet_state is "ready":
-                    bulletX = playerX
-                    fire_bullet(bulletX, bulletY)
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                playerX_change = 0
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    playerX_change = -5
+                if event.key == pygame.K_RIGHT:
+                    playerX_change = 5
+                if event.key == pygame.K_SPACE:
+                    if bullet_state is "ready":
+                        bulletX = playerX
+                        fire_bullet(bulletX, bulletY)
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    playerX_change = 0
 
 
-     
-    playerX += playerX_change
-    if playerX <= 0:
-        playerX = 0
-    elif playerX >= 736:
-        playerX = 736
-
-    
-
-    # enemy movement
-    for i in range(num_of_enemies):
-        # game over
         
-        
-        if captured(enemyX[i], enemyY[i], playerX, playerY):
-            num_lives -= 1
-            enemyY[i] = 2000
+        playerX += playerX_change
+        if playerX <= 0:
+            playerX = 0
+        elif playerX >= 736:
+            playerX = 736
 
-        if num_lives is 0:
-            for i in range(num_of_enemies):
+        
+        # enemy movement
+        for i in range(num_of_enemies):
+            # game over
+        
+            
+            if captured(enemyX[i], enemyY[i], playerX, playerY):
+                num_lives -= 1
                 enemyY[i] = 2000
-                break
-            game_over_text()
-        
-        
-                    
-            #if enemyY[i] > 690:
-            #enemyX[i] = random.randint(0, 735)
-            #enemyY[i] = random.randint(50, 150)
+
+            if num_lives is 0:
+                for i in range(num_of_enemies):
+                    enemyY[i] = 2000
+                    break
+                running = False
             
+            
+                        
+                #if enemyY[i] > 690:
+                #enemyX[i] = random.randint(0, 735)
+                #enemyY[i] = random.randint(50, 150)
+                
 
-        enemyX[i] += enemyX_change[i]
-        if enemyX[i] <= 0:
-            enemyX_change[i] = 2
-            enemyY[i] += enemyY_change[i]
-        elif enemyX[i] >= 736:
-            enemyX_change[i] = -2
-            enemyY[i] += enemyY_change[i]
+            enemyX[i] += enemyX_change[i]
+            if enemyX[i] <= 0:
+                enemyX_change[i] = 2
+                enemyY[i] += enemyY_change[i]
+            elif enemyX[i] >= 736:
+                enemyX_change[i] = -2
+                enemyY[i] += enemyY_change[i]
 
-        # collision
-        collision = isCollision(enemyX[i], enemyY[i], bulletX, bulletY)
-        if collision:
-            bulletY = 600
+            # collision
+            collision = isCollision(enemyX[i], enemyY[i], bulletX, bulletY)
+            if collision:
+                bulletY = 600
+                bullet_state = "ready"
+                score_value += 1
+                enemies_down += 1
+                print(score_value)
+                
+                enemyY[i] = 2000
+
+            enemy(enemyX[i], enemyY[i], i)
+
+
+        if num_lives is 3:
+            screen.blit(pygame.image.load("life.png"), (750, 15))
+            screen.blit(pygame.image.load('life.png'), (700, 15))
+            screen.blit(pygame.image.load('life.png'), (650, 15))
+        if num_lives is 2:
+            screen.blit(pygame.image.load('life.png'), (750, 15))
+            screen.blit(pygame.image.load('life.png'), (700, 15))
+        if num_lives is 1:
+            screen.blit(pygame.image.load('life.png'), (750, 15))
+        if num_lives is 0:
+            heartless = font.render("no lives left ", True, (255, 255, 255))
+            screen.blit(heartless, (700, 50))
+
+            
+        # bullet movement
+        if bulletY <= 0:
+            bulletY = 570
             bullet_state = "ready"
-            score_value += 1
-            print(score_value)
-            
-            enemyY[i] = 2000
-
-        enemy(enemyX[i], enemyY[i], i)
-
-
-    if num_lives is 3:
-        screen.blit(pygame.image.load("life.png"), (750, 50))
-        screen.blit(pygame.image.load('life.png'), (730, 100))
-        screen.blit(pygame.image.load('life.png'), (710, 100))
-    if num_lives is 2:
-        screen.blit(pygame.image.load('life.png'), (700, 100))
-        screen.blit(pygame.image.load('life.png'), (600, 100))
-    if num_lives is 1:
-        screen.blit(pygame.image.load('life.png'), (700, 100))
-    if num_lives is 0:
-        heartless = font.render("no lives left ", True, (255, 255, 255))
-        screen.blit(heartless, (700, 50))
+        if bullet_state is "fire":
+            fire_bullet(bulletX, bulletY)
+            bulletY -= bulletY_change
 
         
-    # bullet movement
-    if bulletY <= 0:
-        bulletY = 570
-        bullet_state = "ready"
-    if bullet_state is "fire":
-        fire_bullet(bulletX, bulletY)
-        bulletY -= bulletY_change
-
-    
 
 
-    player(playerX, playerY)
-    show_score(textX, textY)
-    pygame.display.update()
+        player(playerX, playerY)
+        show_score(textX, textY)
+        pygame.display.update()
+
+    while not running:
+        screen.fill((0, 0, 0))
+        # background image
+        game_over_text()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                on = False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    running = True
+                if event.key == pygame.K_e:
+                    on = False
+                        
+            
+

@@ -118,18 +118,17 @@ def captured(enemyX, enemyY, playerX, playerY):
     else:
         return False
 
-
+running = True
 on = True
-while on:
+while running:
         # game loop
-    running = True
-    while running:
+    while on:
         screen.fill((0, 0, 0))
         # background image
         screen.blit(background, (0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                on = False
+                running = False
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -166,7 +165,7 @@ while on:
                 for i in range(num_of_enemies):
                     enemyY[i] = 2000
                     break
-                running = False
+                on = False
             
             
                         
@@ -226,19 +225,19 @@ while on:
         show_score(textX, textY)
         pygame.display.update()
 
-    while not running:
+    while on is False:
         screen.fill((0, 0, 0))
         # background image
         game_over_text()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                on = False
+                running = False
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    running = True
+                    on = True
                 if event.key == pygame.K_e:
-                    on = False
+                    running = False
                         
             
 

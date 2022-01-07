@@ -106,7 +106,7 @@ def fire_bullet(x, y):
 
 def isCollision(enemyX, enemyY, bulletX, bulletY):
     distance = math.sqrt(math.pow(enemyX-bulletX, 2)+math.pow(enemyY - bulletY, 2))
-    if distance < 27 and bullet_state is "fire":
+    if distance < 27 and bullet_state == "fire":
         return True
     else:
         return False
@@ -119,10 +119,8 @@ def captured(enemyX, enemyY, playerX, playerY):
         return False
 
 running = True
-on = True
+
 while running:
-        # game loop
-    while on:
         screen.fill((0, 0, 0))
         # background image
         screen.blit(background, (0, 0))
@@ -143,8 +141,6 @@ while running:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     playerX_change = 0
 
-
-        
         playerX += playerX_change
         if playerX <= 0:
             playerX = 0
@@ -161,12 +157,11 @@ while running:
                 num_lives -= 1
                 enemyY[i] = 2000
 
-            if num_lives is 0:
+            if num_lives == 0:
                 for i in range(num_of_enemies):
                     enemyY[i] = 2000
                     break
-                on = False
-            
+                game_over_text()            
             
                         
                 #if enemyY[i] > 690:
@@ -196,16 +191,16 @@ while running:
             enemy(enemyX[i], enemyY[i], i)
 
 
-        if num_lives is 3:
+        if num_lives == 3:
             screen.blit(pygame.image.load("life.png"), (750, 15))
             screen.blit(pygame.image.load('life.png'), (700, 15))
             screen.blit(pygame.image.load('life.png'), (650, 15))
-        if num_lives is 2:
+        if num_lives == 2:
             screen.blit(pygame.image.load('life.png'), (750, 15))
             screen.blit(pygame.image.load('life.png'), (700, 15))
-        if num_lives is 1:
+        if num_lives == 1:
             screen.blit(pygame.image.load('life.png'), (750, 15))
-        if num_lives is 0:
+        if num_lives == 0:
             heartless = font.render("no lives left ", True, (255, 255, 255))
             screen.blit(heartless, (700, 50))
 
@@ -225,19 +220,9 @@ while running:
         show_score(textX, textY)
         pygame.display.update()
 
-    while on is False:
-        screen.fill((0, 0, 0))
-        # background image
-        game_over_text()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+    
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    on = True
-                if event.key == pygame.K_e:
-                    running = False
+
                         
             
 

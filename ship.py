@@ -31,20 +31,32 @@ playerX = 370
 playerY = 635
 playerX_change = 0
 
+# lives
+
+num_lives = 3
+
+
+
+
+   
+
+
 # enemy
 enemyImg = []
 enemyX = []
 enemyY = []
 enemyX_change = []
 enemyY_change =[]
-num_of_enemies = 6
+num_of_enemies = 15
 
 for i in range(num_of_enemies):
     enemyImg.append(pygame.image.load('ufo.png'))
     enemyX.append(random.randint(0, 735))
-    enemyY.append(random.randint(50, 150))
-    enemyX_change.append(5)
-    enemyY_change.append(40)
+    enemyY.append(random.randint(-1000, 400))
+    enemyX_change.append(2)
+    enemyY_change.append(60)
+
+
 
 # defense
 # Ready - you cant see the bullet on the screen
@@ -60,8 +72,8 @@ bullet_state = "ready"
 score_value=0
 font = pygame.font.Font('freesansbold.ttf', 32)
 
-
-over_font = pygame.font.Font('freesansbold.ttf', 32)
+# game over font
+over_font = pygame.font.Font('freesansbold.ttf', 62)
 
 
 textX = 10
@@ -71,8 +83,12 @@ def show_score(x, y):
     screen.blit(score, (x,y))
 
 def game_over_text():
-    game_over = font.render("GAME OVER" , True, (255, 255, 255))
-    screen.blit(game_over, (250,200))
+    game_over = over_font.render("GAME OVER" , True, (255, 255, 255))
+    screen.blit(game_over, (275,250))
+# live
+
+
+
 
 def player(x, y):
     screen.blit(playerImg, (x, y))
@@ -88,13 +104,19 @@ def fire_bullet(x, y):
     screen.blit(bulletImg, (x + 16, y+10))
 
 
-def isCollision(x1, y1, x2, y2):
-    distance = math.sqrt(math.pow(x1-x2, 2)+math.pow(y1 - y2, 2))
-    if distance < 10:
+def isCollision(enemyX, enemyY, bulletX, bulletY):
+    distance = math.sqrt(math.pow(enemyX-bulletX, 2)+math.pow(enemyY - bulletY, 2))
+    if distance < 27 and bullet_state is "fire":
         return True
     else:
         return False
 
+def captured(enemyX, enemyY, playerX, playerY):
+    distancee = math.sqrt(math.pow(enemyX-playerX, 2)+math.pow(enemyY - playerY, 2))
+    if distancee < 27:
+        return True
+    else:
+        return False
 
 
  
@@ -122,27 +144,44 @@ while running:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 playerX_change = 0
 
+
+     
     playerX += playerX_change
     if playerX <= 0:
         playerX = 0
     elif playerX >= 736:
         playerX = 736
 
+    
+
     # enemy movement
     for i in range(num_of_enemies):
         # game over
-        if isCollision(enemyY[i], enemyX[i], playerX, playerY):
+        
+        
+        if captured(enemyX[i], enemyY[i], playerX, playerY):
+            num_lives -= 1
+            enemyY[i] = 2000
+
+        if num_lives is 0:
             for i in range(num_of_enemies):
                 enemyY[i] = 2000
+                break
             game_over_text()
-            break
+        
+        
+                    
+            #if enemyY[i] > 690:
+            #enemyX[i] = random.randint(0, 735)
+            #enemyY[i] = random.randint(50, 150)
+            
 
         enemyX[i] += enemyX_change[i]
         if enemyX[i] <= 0:
-            enemyX_change[i] = 5
+            enemyX_change[i] = 2
             enemyY[i] += enemyY_change[i]
         elif enemyX[i] >= 736:
-            enemyX_change[i] = -5
+            enemyX_change[i] = -2
             enemyY[i] += enemyY_change[i]
 
         # collision
@@ -152,12 +191,26 @@ while running:
             bullet_state = "ready"
             score_value += 1
             print(score_value)
-            enemyX[i] = random.randint(0, 735)
-            enemyY[i] = random.randint(50, 150)
+            
+            enemyY[i] = 2000
 
         enemy(enemyX[i], enemyY[i], i)
 
 
+    if num_lives is 3:
+        screen.blit(pygame.image.load("life.png"), (750, 50))
+        screen.blit(pygame.image.load('life.png'), (730, 100))
+        screen.blit(pygame.image.load('life.png'), (710, 100))
+    if num_lives is 2:
+        screen.blit(pygame.image.load('life.png'), (700, 100))
+        screen.blit(pygame.image.load('life.png'), (600, 100))
+    if num_lives is 1:
+        screen.blit(pygame.image.load('life.png'), (700, 100))
+    if num_lives is 0:
+        heartless = font.render("no lives left ", True, (255, 255, 255))
+        screen.blit(heartless, (700, 50))
+
+        
     # bullet movement
     if bulletY <= 0:
         bulletY = 570

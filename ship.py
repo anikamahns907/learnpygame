@@ -41,7 +41,7 @@ enemies_down = 0
    
 
 
-# enemy
+# enemy arraylist created and appended
 enemyImg = []
 enemyX = []
 enemyY = []
@@ -52,7 +52,7 @@ num_of_enemies = 15
 for i in range(num_of_enemies):
     enemyImg.append(pygame.image.load('ufo.png'))
     enemyX.append(random.randint(0, 735))
-    enemyY.append(random.randint(-600, 300))
+    enemyY.append(random.randint(-600, 650))
     enemyX_change.append(2)
     enemyY_change.append(60)
 
@@ -84,11 +84,32 @@ def show_score(x, y):
     screen.blit(score, (x,y))
 
 def game_over_text():
-    game_over = over_font.render("GAME OVER press e to exit and SPACE to play again" , True, (255, 255, 255))
+    game_over = over_font.render("GAME OVER press any button to exit and e to play again" , True, (255, 255, 255))
     screen.blit(game_over, (275,250))
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    global num_lives
+                    global enemies_down
+                    global score_value
+                    num_lives = 3
+                    enemies_down = 0
+                    score_value=0
+                   
+                    for i in range(15):
+                        
+                        enemyX[i] = random.randint(0, 735)
+                        enemyY[i] = random.randint(-600, 650)
+                        enemyX_change[i] = 2
+                        enemyY_change[i] = 60
+                    
+                    
+
+
+        
+        
+
 # live
-
-
 
 def player(x, y):
     screen.blit(playerImg, (x, y))
@@ -117,13 +138,14 @@ def captured(enemyX, enemyY, playerX, playerY):
         return True
     else:
         return False
-
 running = True
-
+game_over = False
 while running:
         screen.fill((0, 0, 0))
         # background image
         screen.blit(background, (0, 0))
+
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -141,11 +163,14 @@ while running:
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     playerX_change = 0
 
+
         playerX += playerX_change
         if playerX <= 0:
             playerX = 0
         elif playerX >= 736:
             playerX = 736
+
+    
 
         
         # enemy movement
@@ -160,13 +185,11 @@ while running:
             if num_lives == 0:
                 for i in range(num_of_enemies):
                     enemyY[i] = 2000
-                    break
-                game_over_text()            
+
+                game_over = True         
             
                         
-                #if enemyY[i] > 690:
-                #enemyX[i] = random.randint(0, 735)
-                #enemyY[i] = random.randint(50, 150)
+              
                 
 
             enemyX[i] += enemyX_change[i]
@@ -201,8 +224,8 @@ while running:
         if num_lives == 1:
             screen.blit(pygame.image.load('life.png'), (750, 15))
         if num_lives == 0:
-            heartless = font.render("no lives left ", True, (255, 255, 255))
-            screen.blit(heartless, (700, 50))
+            heartless = font.render("You have no lives left. ", True, (255, 255, 255))
+            screen.blit(heartless, (600, 20))
 
             
         # bullet movement
@@ -225,4 +248,3 @@ while running:
 
                         
             
-
